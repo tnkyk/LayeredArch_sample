@@ -7,5 +7,5 @@ import (
 )
 
 type TodoRepository interface {
-	GetAll(context.Context) (*[]model.Todo, error)
+	GetAll(context.Context) ([]*model.Todo, error)
 }

@@ -11,6 +11,6 @@ import (
 type Todo struct {
 	Id        int
 	Title     string
-	Auther    string
+	Author    string
 	CreatedAt time.Time
 }
