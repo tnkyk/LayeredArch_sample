@@ -47,7 +47,7 @@ func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httproute
 	ctx := r.Context()
 
 	//ユースケースの呼び出し
-	todos, err := th.todoUseCase.GetAll(ctx)
+	todos, err := th.todoUseCase.TodoGetAll(ctx)
 	if err != nil {
 		http.Error(w, "Internal Sever Error", 500)
 		return
@@ -70,5 +70,4 @@ func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httproute
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-
 }
