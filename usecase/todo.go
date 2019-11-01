@@ -10,11 +10,11 @@ import (
 )
 
 type TodoUseCase interface {
-	GetAll(context.Context) ([]*model.Todo, error)
+	TodoGetAll(context.Context) ([]*model.Todo, error)
 }
 
 type todoUseCase struct {
-	todoRepository repository.TodoRepository
+	todoRepository repository.TodoRepository //TodoRepositoryインターフェースを満たす必要がある
 }
 
 //ここでドメイン層のインターフェースとユースケース層のインターフェースをつなげている。
@@ -25,7 +25,7 @@ func NewTodoUseCase(tr repository.TodoRepository) TodoUseCase {
 }
 
 //Todoデータを全件取得するためのユースケース
-func (tu todoUseCase) GetAll(ctx context.Context) (todos []*model.Todo, err error) {
+func (tu todoUseCase) TodoGetAll(ctx context.Context) (todos []*model.Todo, err error) {
 	// Persistenceを呼出
 	todos, err = tu.todoRepository.GetAll(ctx)
 	if err != nil {
