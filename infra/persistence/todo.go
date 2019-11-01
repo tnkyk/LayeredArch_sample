@@ -25,6 +25,6 @@ func (tp TodoPersistence) GetAll(context.Context) ([]*model.Todo, error) {
 	return []*model.Todo{&todo1, &todo2}, nil
 }
 
-func (tp TodoPersistence) GetById(_ context.Context, id int) ([]*model.Todo, error) {
+// func (tp TodoPersistence) GetById(_ context.Context, id int) ([]*model.Todo, error) {
 
-}
+// }

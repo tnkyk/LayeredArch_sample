@@ -8,5 +8,5 @@ import (
 
 type TodoRepository interface {
 	GetAll(context.Context) ([]*model.Todo, error)
-	GetById(context.Context, int) ([]*model.Todo, error)
+	//GetById(context.Context, int) ([]*model.Todo, error)
 }

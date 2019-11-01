@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	_ "github.com/tnkyk/LayeredArch_sample/config"
 	handler "github.com/tnkyk/LayeredArch_sample/handler/rest"
 	"github.com/tnkyk/LayeredArch_sample/infra/persistence"
 	"github.com/tnkyk/LayeredArch_sample/usecase"
