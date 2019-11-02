@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -35,4 +37,5 @@ func init() {
 		log.Fatal(err)
 	}
 	fmt.Println("open SQL")
+	rand.Seed(time.Now().UnixNano())
 }
