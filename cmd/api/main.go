@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	_ "github.com/tnkyk/LayeredArch_sample/config"
 	handler "github.com/tnkyk/LayeredArch_sample/handler/rest"
 	"github.com/tnkyk/LayeredArch_sample/infra/persistence"
 	"github.com/tnkyk/LayeredArch_sample/usecase"
@@ -20,6 +19,7 @@ func main() {
 	//ルーティングの設定
 	router := httprouter.New()
 	router.GET("/api/todos", todoHandler.Index)
+	router.GET("/api/todo", todoHandler.GetOneTodo)
 
 	//サーバー起動
 	port := ":3000" //"3000"だとエラーになる
