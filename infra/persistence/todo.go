@@ -58,13 +58,24 @@ func (tp TodoPersistence) UpsertTodo(ctx context.Context, id string, title strin
 	if err != nil {
 		return err
 	}
-	result, err := stmt.Exec(id, title, createdAt, title, createdAt)
+	_, err = stmt.Exec(id, title, createdAt, title, createdAt)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	if result == nil {
-		log.Println(result)
+	return nil
+}
+
+func (tp TodoPersistence) DeleteTodo(ctx context.Context, id string) error {
+	stmt, err := config.DB.Prepare(`DELETE FROM todos WHERE id = ?`)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
 	return nil
 }

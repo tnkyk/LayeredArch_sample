@@ -21,6 +21,7 @@ func main() {
 	router.GET("/api/todos", todoHandler.Index)
 	router.GET("/api/todo", todoHandler.GetOneTodo)
 	router.PUT("/api/todo/create", todoHandler.UpsertTodo)
+	router.DELETE("/api/todo/delete", todoHandler.DeleteTodo)
 
 	//サーバー起動
 	port := ":3000" //"3000"だとエラーになる

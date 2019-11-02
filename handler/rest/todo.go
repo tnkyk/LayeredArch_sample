@@ -15,6 +15,7 @@ type TodoHandler interface {
 	Index(http.ResponseWriter, *http.Request, httprouter.Params)
 	GetOneTodo(http.ResponseWriter, *http.Request, httprouter.Params)
 	UpsertTodo(http.ResponseWriter, *http.Request, httprouter.Params)
+	DeleteTodo(http.ResponseWriter, *http.Request, httprouter.Params)
 }
 
 //この構造体は元々TodoUseCaseinterfaceと紐づいていて、Indexメソッドの宣言の際にこの構造体と新たに紐づけられる
@@ -29,8 +30,8 @@ func NewTodokHandler(tu usecase.TodoUseCase) TodoHandler {
 	}
 }
 
-//Index: Get /todos -> todoデータ一覧取得
-func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+//Index: Get /todos -> todoデータ一覧取得  ポインタにしないと、レシーバの値を影響させることが出来ない
+func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 	type TodoField struct {
 		Id    int64  `json:"id"`
 		Title string `json:"title"`
@@ -70,7 +71,7 @@ func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httproute
 	}
 }
 
-func (th todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 	//request：TodoAPIのパラメータ
 	type TodoField struct {
 		Id    int64  `json:"id"`
@@ -114,7 +115,7 @@ func (th todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr http
 	}
 }
 
-func (th todoHandler) UpsertTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+func (th *todoHandler) UpsertTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 
 	u, err := uuid.NewRandom()
 	if err != nil {
@@ -138,4 +139,13 @@ func (th todoHandler) UpsertTodo(w http.ResponseWriter, r *http.Request, pr http
 
 	json.NewEncoder(w).Encode(newTodo)
 
+}
+
+func (th *todoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+	ctx := r.Context()
+	err := th.todoUseCase.DeleteTodo(ctx, r.FormValue("id"))
+	if err != nil {
+		log.Println(err)
+	}
+	w.WriteHeader(http.StatusCreated)
 }

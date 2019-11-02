@@ -15,6 +15,7 @@ type TodoUseCase interface {
 	TodoGetAll(context.Context) ([]*model.Todo, error)
 	TodoGetById(context.Context, string) (*model.Todo, error)
 	UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error
+	DeleteTodo(ctx context.Context, id string) error
 }
 
 type todoUseCase struct {
@@ -52,6 +53,15 @@ func (tu todoUseCase) TodoGetById(ctx context.Context, id string) (todo *model.T
 
 func (tu todoUseCase) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
 	err := tu.todoRepository.UpsertTodo(ctx, id, title, createdAt)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (tu todoUseCase) DeleteTodo(ctx context.Context, id string) error {
+	err := tu.todoRepository.DeleteTodo(ctx, id)
 	if err != nil {
 		log.Println(err)
 		return err
