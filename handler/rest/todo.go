@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 
 type TodoHandler interface {
 	Index(http.ResponseWriter, *http.Request, httprouter.Params)
+	GetOneTodo(http.ResponseWriter, *http.Request, httprouter.Params)
 }
 
 //この構造体は元々TodoUseCaseinterfaceと紐づいていて、Indexメソッドの宣言の際にこの構造体と新たに紐づけられる
@@ -27,16 +29,10 @@ func NewTodokHandler(tu usecase.TodoUseCase) TodoHandler {
 
 //Index: Get /todos -> todoデータ一覧取得
 func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
-	//request：TodoAPIのパラメータ
-	type requset struct {
-		Begin uint `query:begin`
-		Limit uint `query:limit`
-	}
-
 	type TodoField struct {
-		Id        int64     `json:"id"`
-		Title     string    `json:"title"`
-		Author    string    `json:"author"`
+		Id    int64  `json:"id"`
+		Title string `json:"title"`
+		//Author    string    `json:"author"`
 		CreatedAt time.Time `json:"created_at"`
 	}
 	//response : Todo　API　のレスポンス
@@ -59,10 +55,55 @@ func (th todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httproute
 		var tf TodoField
 		tf.Id = int64(todo.Id)
 		tf.Title = todo.Title
-		tf.Author = todo.Author
+		//tf.Author = todo.Author
 		tf.CreatedAt = todo.CreatedAt
 		res.Todos = append(res.Todos, tf)
 	}
+
+	//クライアントにレスポンスを返却
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(res); err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+}
+
+func (th todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
+	//request：TodoAPIのパラメータ
+	type TodoField struct {
+		Id    int64  `json:"id"`
+		Title string `json:"title"`
+		//Author    string    `json:"author"`
+		CreatedAt time.Time `json:"created_at"`
+	}
+	//response : Todo　API　のレスポンス
+	type response struct {
+		Todos []TodoField `json:"todos"`
+	}
+
+	ctx := r.Context()
+	param := r.URL.Query()
+	id := param.Get("id")
+	log.Println(id)
+
+	//ユースケースの呼び出し
+	todo, err := th.todoUseCase.TodoGetById(ctx, id)
+	if err != nil {
+		log.Println(err)
+		log.Println(todo)
+		http.Error(w, "Internal Sever Error", 500)
+		return
+	}
+
+	//取得したドメインモデルをresponseに変換
+	res := new(response)
+
+	var tf TodoField
+	tf.Id = int64(todo.Id)
+	tf.Title = todo.Title
+	//tf.Author = todo.Author
+	tf.CreatedAt = todo.CreatedAt
+	res.Todos = append(res.Todos, tf)
 
 	//クライアントにレスポンスを返却
 	w.Header().Set("Content-Type", "application/json")

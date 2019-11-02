@@ -19,6 +19,7 @@ func main() {
 	//ルーティングの設定
 	router := httprouter.New()
 	router.GET("/api/todos", todoHandler.Index)
+	router.GET("/api/todo", todoHandler.GetOneTodo)
 
 	//サーバー起動
 	port := ":3000" //"3000"だとエラーになる
