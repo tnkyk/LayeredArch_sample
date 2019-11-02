@@ -5,6 +5,7 @@ package persistence
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/tnkyk/LayeredArch_sample/domain/model"
 	"github.com/tnkyk/LayeredArch_sample/domain/repository"
@@ -49,4 +50,21 @@ func (tp TodoPersistence) GetById(ctx context.Context, id string) (*model.Todo, 
 
 	return todo, nil
 
+}
+
+func (tp TodoPersistence) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
+	stmt, err := config.DB.Prepare(`INSERT INTO todos (id, title, created_at) VALUES (?, ?, ?)
+	ON DUPLICATE KEY UPDATE title=?, created_at=?`)
+	if err != nil {
+		return err
+	}
+	result, err := stmt.Exec(id, title, createdAt, title, createdAt)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if result == nil {
+		log.Println(result)
+	}
+	return nil
 }

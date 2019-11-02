@@ -5,6 +5,7 @@ package usecase
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/tnkyk/LayeredArch_sample/domain/model"
 	"github.com/tnkyk/LayeredArch_sample/domain/repository"
@@ -13,6 +14,7 @@ import (
 type TodoUseCase interface {
 	TodoGetAll(context.Context) ([]*model.Todo, error)
 	TodoGetById(context.Context, string) (*model.Todo, error)
+	UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error
 }
 
 type todoUseCase struct {
@@ -46,4 +48,13 @@ func (tu todoUseCase) TodoGetById(ctx context.Context, id string) (todo *model.T
 		return nil, err
 	}
 	return todo, nil
+}
+
+func (tu todoUseCase) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
+	err := tu.todoRepository.UpsertTodo(ctx, id, title, createdAt)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }
