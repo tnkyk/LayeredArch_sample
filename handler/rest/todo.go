@@ -33,7 +33,7 @@ func NewTodokHandler(tu usecase.TodoUseCase) TodoHandler {
 //Index: Get /todos -> todoデータ一覧取得  ポインタにしないと、レシーバの値を影響させることが出来ない
 func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 	type TodoField struct {
-		Id    int64  `json:"id"`
+		Id    string `json:"id"`
 		Title string `json:"title"`
 		//Author    string    `json:"author"`
 		CreatedAt time.Time `json:"created_at"`
@@ -56,7 +56,7 @@ func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprout
 	res := new(response)
 	for _, todo := range todos {
 		var tf TodoField
-		tf.Id = int64(todo.Id)
+		tf.Id = todo.Id
 		tf.Title = todo.Title
 		//tf.Author = todo.Author
 		tf.CreatedAt = todo.CreatedAt
@@ -74,7 +74,7 @@ func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprout
 func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 	//request：TodoAPIのパラメータ
 	type TodoField struct {
-		Id    int64  `json:"id"`
+		Id    string `json:"id"`
 		Title string `json:"title"`
 		//Author    string    `json:"author"`
 		CreatedAt time.Time `json:"created_at"`
@@ -101,7 +101,7 @@ func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr htt
 	res := new(response)
 
 	var tf TodoField
-	tf.Id = int64(todo.Id)
+	tf.Id = todo.Id
 	tf.Title = todo.Title
 	//tf.Author = todo.Author
 	tf.CreatedAt = todo.CreatedAt
