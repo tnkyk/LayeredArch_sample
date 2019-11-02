@@ -20,7 +20,7 @@ func NewTodoPersistence() repository.TodoRepository {
 }
 
 //TodoPersistence構造体がGetAllを実装しているという意
-func (tp TodoPersistence) GetAll(context.Context) ([]*model.Todo, error) {
+func (tp *TodoPersistence) GetAll(context.Context) ([]*model.Todo, error) {
 	rows, err := config.DB.Query("SELECT * FROM todos")
 	if err != nil {
 		//TODO: error handling
@@ -38,7 +38,7 @@ func (tp TodoPersistence) GetAll(context.Context) ([]*model.Todo, error) {
 	return todos, nil
 }
 
-func (tp TodoPersistence) GetById(ctx context.Context, id string) (*model.Todo, error) {
+func (tp *TodoPersistence) GetById(ctx context.Context, id string) (*model.Todo, error) {
 	row := config.DB.QueryRow("SELECT * FROM todos WHERE id = ?", id)
 
 	todo := &model.Todo{}
@@ -52,7 +52,7 @@ func (tp TodoPersistence) GetById(ctx context.Context, id string) (*model.Todo, 
 
 }
 
-func (tp TodoPersistence) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
+func (tp *TodoPersistence) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
 	stmt, err := config.DB.Prepare(`INSERT INTO todos (id, title, created_at) VALUES (?, ?, ?)
 	ON DUPLICATE KEY UPDATE title=?, created_at=?`)
 	if err != nil {
@@ -66,7 +66,7 @@ func (tp TodoPersistence) UpsertTodo(ctx context.Context, id string, title strin
 	return nil
 }
 
-func (tp TodoPersistence) DeleteTodo(ctx context.Context, id string) error {
+func (tp *TodoPersistence) DeleteTodo(ctx context.Context, id string) error {
 	stmt, err := config.DB.Prepare(`DELETE FROM todos WHERE id = ?`)
 	if err != nil {
 		log.Println(err)

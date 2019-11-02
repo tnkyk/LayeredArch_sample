@@ -30,7 +30,7 @@ func NewTodoUseCase(tr repository.TodoRepository) TodoUseCase {
 }
 
 //Todoデータを全件取得するためのユースケース
-func (tu todoUseCase) TodoGetAll(ctx context.Context) (todos []*model.Todo, err error) {
+func (tu *todoUseCase) TodoGetAll(ctx context.Context) (todos []*model.Todo, err error) {
 	// Persistenceを呼出
 	todos, err = tu.todoRepository.GetAll(ctx)
 	if err != nil {
@@ -41,7 +41,7 @@ func (tu todoUseCase) TodoGetAll(ctx context.Context) (todos []*model.Todo, err 
 }
 
 //TodoGetById：　IDを用いてTodoを取得する
-func (tu todoUseCase) TodoGetById(ctx context.Context, id string) (todo *model.Todo, err error) {
+func (tu *todoUseCase) TodoGetById(ctx context.Context, id string) (todo *model.Todo, err error) {
 	//Persistenceを呼び出し
 	todo, err = tu.todoRepository.GetById(ctx, id)
 	if err != nil {
@@ -51,7 +51,7 @@ func (tu todoUseCase) TodoGetById(ctx context.Context, id string) (todo *model.T
 	return todo, nil
 }
 
-func (tu todoUseCase) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
+func (tu *todoUseCase) UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error {
 	err := tu.todoRepository.UpsertTodo(ctx, id, title, createdAt)
 	if err != nil {
 		log.Println(err)
@@ -60,7 +60,7 @@ func (tu todoUseCase) UpsertTodo(ctx context.Context, id string, title string, c
 	return nil
 }
 
-func (tu todoUseCase) DeleteTodo(ctx context.Context, id string) error {
+func (tu *todoUseCase) DeleteTodo(ctx context.Context, id string) error {
 	err := tu.todoRepository.DeleteTodo(ctx, id)
 	if err != nil {
 		log.Println(err)
