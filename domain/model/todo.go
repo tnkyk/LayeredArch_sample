@@ -8,7 +8,7 @@ import (
 //実装時最初に着手
 
 type Todo struct {
-	Id    int
+	Id    string
 	Title string
 	//Author    string
 	CreatedAt time.Time
