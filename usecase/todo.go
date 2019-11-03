@@ -12,7 +12,7 @@ import (
 )
 
 type TodoUseCase interface {
-	TodoGetAll(context.Context) ([]*model.Todo, error)
+	TodoGetAll(context.Context) ([]model.Todo, error)
 	TodoGetById(context.Context, string) (*model.Todo, error)
 	UpsertTodo(ctx context.Context, id string, title string, createdAt time.Time) error
 	DeleteTodo(ctx context.Context, id string) error
@@ -30,7 +30,7 @@ func NewTodoUseCase(tr repository.TodoRepository) TodoUseCase {
 }
 
 //Todoデータを全件取得するためのユースケース
-func (tu *todoUseCase) TodoGetAll(ctx context.Context) (todos []*model.Todo, err error) {
+func (tu *todoUseCase) TodoGetAll(ctx context.Context) (todos []model.Todo, err error) {
 	// Persistenceを呼出
 	todos, err = tu.todoRepository.GetAll(ctx)
 	if err != nil {
