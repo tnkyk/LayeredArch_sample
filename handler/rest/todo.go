@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -48,7 +49,10 @@ func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprout
 	//ユースケースの呼び出し
 	todos, err := th.todoUseCase.TodoGetAll(ctx)
 	if err != nil {
-		http.Error(w, "Internal Sever Error", 500)
+		fmt.Errorf("Index >>> %w", err)
+		log.Println(err)
+		he := HttpError{status: http.StatusBadGateway, method: "GET", msg: "not get sql"}
+		http.Error(w, he.Error(), he.status)
 		return
 	}
 
@@ -66,9 +70,11 @@ func (th *todoHandler) Index(w http.ResponseWriter, r *http.Request, pr httprout
 	//クライアントにレスポンスを返却
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(res); err != nil {
-		http.Error(w, "Internal Server Error", 500)
+		he := HttpError{status: http.StatusBadGateway, method: "GET", msg: "can't encode response"}
+		http.Error(w, he.Error(), he.status)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
@@ -92,8 +98,9 @@ func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr htt
 	//ユースケースの呼び出し
 	todo, err := th.todoUseCase.TodoGetById(ctx, id)
 	if err != nil {
+		fmt.Errorf("GetOneTodo Error >>> %w", err)
 		log.Println(err)
-		http.Error(w, "Internal Sever Error", 500)
+		http.Error(w, "internal Server Error", 500)
 		return
 	}
 
@@ -110,9 +117,11 @@ func (th *todoHandler) GetOneTodo(w http.ResponseWriter, r *http.Request, pr htt
 	//クライアントにレスポンスを返却
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(res); err != nil {
-		http.Error(w, "Internal Server Error", 500)
+		he := HttpError{status: http.StatusBadGateway, method: "GET", msg: "can't encode response"}
+		http.Error(w, he.Error(), he.status)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (th *todoHandler) UpsertTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
@@ -133,19 +142,30 @@ func (th *todoHandler) UpsertTodo(w http.ResponseWriter, r *http.Request, pr htt
 	newTodo.Title = r.FormValue("title")
 	newTodo.CreateAt = time.Now()
 	err = th.todoUseCase.UpsertTodo(ctx, u.String(), r.FormValue("title"), time.Now())
+	if err != nil {
+		fmt.Errorf("UpsertTodo Error >>> :%w", err)
+		log.Println(err)
+		http.Error(w, "internal Server Error", 500)
+		return
+	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(newTodo)
+	if err = json.NewEncoder(w).Encode(newTodo); err != nil {
+		he := HttpError{status: http.StatusBadGateway, method: "GET", msg: "can't encode response"}
+		http.Error(w, he.Error(), he.status)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 
 }
-
 func (th *todoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request, pr httprouter.Params) {
 	ctx := r.Context()
 	err := th.todoUseCase.DeleteTodo(ctx, r.FormValue("id"))
 	if err != nil {
+		fmt.Errorf("UpsertTodo Error >>> %w", err)
 		log.Println(err)
+		http.Error(w, "internal Server Error", 500)
+		return
 	}
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }

@@ -4,7 +4,7 @@ package persistence
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/tnkyk/LayeredArch_sample/domain/model"
@@ -23,15 +23,18 @@ func NewTodoPersistence() repository.TodoRepository {
 func (tp *TodoPersistence) GetAll(context.Context) ([]model.Todo, error) {
 	rows, err := config.DB.Query("SELECT * FROM todos")
 	if err != nil {
-		//TODO: error handling
-		log.Println(err)
-		return nil, err
+		sqlerr := NewSQLError(err, "Can't get rows in GetAll")
+		return nil, fmt.Errorf("GetAll Error >>> %w", sqlerr)
 	}
 	var todo model.Todo //todo->値 　&todo->address
 	var todos []model.Todo
 
 	for rows.Next() {
 		err = rows.Scan(&todo.Id, &todo.Title, &todo.CreatedAt)
+		if err != nil {
+			sqlerr := NewSQLError(err, "Can't Scan in GetAll")
+			return nil, fmt.Errorf("GetAll Error >>> %w", sqlerr)
+		}
 		todos = append(todos, todo)
 	}
 
@@ -45,8 +48,8 @@ func (tp *TodoPersistence) GetById(ctx context.Context, id string) (*model.Todo,
 	var todo model.Todo
 	err := row.Scan(&todo.Id, &todo.Title, &todo.CreatedAt)
 	if err != nil {
-		log.Println("can't get row")
-		return nil, err
+		sqlerr := NewSQLError(err, "Can't Scan in GetById")
+		return nil, fmt.Errorf("GetById Error >>> %w", sqlerr)
 	}
 
 	return &todo, nil
@@ -57,12 +60,13 @@ func (tp *TodoPersistence) UpsertTodo(ctx context.Context, id string, title stri
 	stmt, err := config.DB.Prepare(`INSERT INTO todos (id, title, created_at) VALUES (?, ?, ?)
 	ON DUPLICATE KEY UPDATE title=?, created_at=?`)
 	if err != nil {
-		return err
+		sqlerr := NewSQLError(err, "Can't Prepare in UpsertTodo")
+		return fmt.Errorf("%w", sqlerr)
 	}
 	_, err = stmt.Exec(id, title, createdAt, title, createdAt)
 	if err != nil {
-		log.Println(err)
-		return err
+		sqlerr := NewSQLError(err, "Can't Exec in UpsertTodo")
+		return fmt.Errorf("UpsertTodo Error >>> %w", sqlerr)
 	}
 	return nil
 }
@@ -70,13 +74,13 @@ func (tp *TodoPersistence) UpsertTodo(ctx context.Context, id string, title stri
 func (tp *TodoPersistence) DeleteTodo(ctx context.Context, id string) error {
 	stmt, err := config.DB.Prepare(`DELETE FROM todos WHERE id = ?`)
 	if err != nil {
-		log.Println(err)
-		return err
+		sqlerr := NewSQLError(err, "Can't Prepare in DeleteTodo")
+		return fmt.Errorf("DeleteTodo Error >>> %w", sqlerr)
 	}
 	_, err = stmt.Exec(id)
 	if err != nil {
-		log.Println(err)
-		return err
+		sqlerr := NewSQLError(err, "Can't Exec in DeleteTodo")
+		return fmt.Errorf("DeleteTodo Error >>> %w", sqlerr)
 	}
 	return nil
 }

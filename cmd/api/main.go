@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+
+	//サーバー起動
 	todoPersistence := persistence.NewTodoPersistence()
 	todoUseCase := usecase.NewTodoUseCase(todoPersistence)
 	todoHandler := handler.NewTodokHandler(todoUseCase)
@@ -21,18 +23,18 @@ func main() {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	//ルーティングの設定
-	router := httprouter.New()
-	router.GET("/api/todos", todoHandler.Index)
-	router.GET("/api/todo", todoHandler.GetOneTodo)
-	router.PUT("/api/todo/upsert", todoHandler.UpsertTodo)
-	router.DELETE("/api/todo/delete", todoHandler.DeleteTodo)
+	Router := httprouter.New()
+	Router.GET("/api/todos", todoHandler.Index)
+	Router.GET("/api/todo", todoHandler.GetOneTodo)
+	Router.PUT("/api/todo/upsert", todoHandler.UpsertTodo)
+	Router.DELETE("/api/todo/delete", todoHandler.DeleteTodo)
 
-	router.GET("/api/users", userHandler.Index)
-	router.GET("/api/user", todoHandler.GetOneTodo)
-	router.PUT("/api/user/upsert", userHandler.UpsertUser)
-	router.DELETE("/api/user/delete", userHandler.DeleteUser)
-	//サーバー起動
-	port := ":3000" //"3000"だとエラーになる
+	Router.GET("/api/users", userHandler.Index)
+	Router.GET("/api/user", todoHandler.GetOneTodo)
+	Router.PUT("/api/user/upsert", userHandler.UpsertUser)
+	Router.DELETE("/api/user/delete", userHandler.DeleteUser)
+	//"3000"だとエラーになる
+	port := ":3000"
 	fmt.Println(`Server Start >> http:// localhost:%d`, port)
-	log.Fatal(http.ListenAndServe(port, router))
+	log.Fatal(http.ListenAndServe(port, Router))
 }
