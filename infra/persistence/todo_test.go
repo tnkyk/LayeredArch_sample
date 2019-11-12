@@ -71,17 +71,17 @@ func TestGetById(t *testing.T) {
 }
 
 func TestUpsertTodo(t *testing.T) {
-	tp1, _ := time.Parse("2006年01月02日 15時04分05秒", "2019年11月02日 16時05分00秒")
-	tp2, _ := time.Parse("2006年01月02日 15時04分05秒", "2019年11月02日 15時37分20秒")
-	cases := []struct {
-		CurrentId        string
-		CurrentTitle     string
-		CurrentCreatedAt time.Time
-	}{
-		{"4f214757-1ec1-49d7-8465-cac3212ae169", "example3", tp1},
-		{"e51cd7d4-335d-4aa8-9cd1-85ea46569492", "example2", tp2},
-	}
-	req, _ := http.NewRequest("PUT", fmt.Sprintf("http://localhost:3000/api/upsert"))
-	ctx := req.Context()
+	// tp1, _ := time.Parse("2006年01月02日 15時04分05秒", "2019年11月02日 16時05分00秒")
+	// tp2, _ := time.Parse("2006年01月02日 15時04分05秒", "2019年11月02日 15時37分20秒")
+	// cases := []struct {
+	// 	CurrentId        string
+	// 	CurrentTitle     string
+	// 	CurrentCreatedAt time.Time
+	// }{
+	// 	{"4f214757-1ec1-49d7-8465-cac3212ae169", "example3", tp1},
+	// 	{"e51cd7d4-335d-4aa8-9cd1-85ea46569492", "example2", tp2},
+	// }
+	// req, _ := http.NewRequest("PUT", fmt.Sprintf("http://localhost:3000/api/upsert"))
+	// ctx := req.Context()
 
 }
